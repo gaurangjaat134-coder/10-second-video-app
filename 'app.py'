@@ -1,1 +1,45 @@
 'import streamlist as st' aur ' st.title("10 second video App "")'|
+import streamlit as st
+import cv2
+import numpy as np
+import tempfile
+
+st.title("10 Second Video App")
+
+st.write("नीचे दिए गए बटन पर क्लिक करके 10 सेकंड का वीडियो बनाएं:")
+
+if st.button("Generate Video"):
+    with st.spinner("10 सेकंड का वीडियो बन रहा है..."):
+        fps = 30
+        duration = 10  # 10 सेकंड
+        total_frames = fps * duration
+        width, height = 640, 480
+
+        # अस्थाई वीडियो फ़ाइल बनाएं
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+        
+        # VideoWriter सेटअप
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(temp_file.name, fourcc, fps, (width, height))
+
+        for frame_num in range(total_frames):
+            img = np.zeros((height, width, 3), np.uint8)
+            time_left = duration - (frame_num // fps)
+            
+            # फ्रेम का रंग बदलना
+            color = (int((frame_num / total_frames) * 255), 120, 200)
+            img[:] = color
+
+            # काउंटडाउन टेक्स्ट लिखना
+            text = f"Time: {time_left}s"
+            cv2.putText(img, text, (180, 250), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 4)
+
+            out.write(img)
+
+        out.release()
+
+        st.success("वीडियो सफलतापूर्वक बन गया!")
+        st.video(temp_file.name)
+streamlit
+opencv-python-headless
+numpy
